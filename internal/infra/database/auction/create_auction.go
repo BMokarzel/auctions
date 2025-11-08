@@ -2,10 +2,10 @@ package auction
 
 import (
 	"context"
-	timer "fullcycle-auction_go"
 	"fullcycle-auction_go/configuration/logger"
 	"fullcycle-auction_go/internal/entity/auction_entity"
 	"fullcycle-auction_go/internal/internal_error"
+	timer "fullcycle-auction_go/pkg/timer"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -37,8 +37,8 @@ func (ar *AuctionRepository) CreateAuction(
 
 	timer, err := timer.AuctionTimer()
 	if err != nil {
-		//
-		//
+		logger.Error("Error trying to get auction timer", err)
+		return internal_error.NewInternalServerError("Error trying to get auction timer")
 	}
 
 	auctionEntityMongo := &AuctionEntityMongo{
@@ -59,19 +59,18 @@ func (ar *AuctionRepository) CreateAuction(
 	go func() {
 		<-time.After(timer)
 
-		filter := bson.M{"_id": auctionEntity.Id, "status": auction_entity.Active} //não são esses os status
+		filter := bson.M{"_id": auctionEntity.Id, "status": auction_entity.Active}
 		update := bson.M{
 			"$set": bson.M{"status": auction_entity.Completed},
 		}
 
 		_, err = ar.Collection.UpdateOne(ctx, filter, update)
 		if err != nil {
-			//
-			//
+			logger.Error("Error trying to close auction", err)
+			return
 		}
 
-		//
-		//pode logar aqui
+		logger.Info("Auction closed successfully")
 
 	}()
 
