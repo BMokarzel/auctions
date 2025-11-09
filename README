@@ -1,0 +1,29 @@
+1. Rode o comando abaixo para subir o ambiente com o banco de dados.
+
+docker compose up -d
+
+2. Configure as variaveis de ambiente.
+
+Caso powershell
+
+$Env:AUCTION_INTERVAL="20"
+$Env:BATCH_INSERT_INTERVAL="20"
+$Env:MAX_BATCH_SIZE="4"
+$Env:MONGO_INITDB_ROOT_USERNAME="admin"
+$Env:MONGO_INITDB_ROOT_PASSWORD="admin"
+$Env:MONGODB_URL="mongodb://admin:admin@mongodb:27017/auctions?authSource=admin"
+$Env:MONGODB_DB="auctions"
+
+Caso linux
+
+export AUCTION_INTERVAL="20"
+export BATCH_INSERT_INTERVAL="20"
+export MAX_BATCH_SIZE="4"
+export MONGO_INITDB_ROOT_USERNAME="admin"
+export MONGO_INITDB_ROOT_PASSWORD="admin"
+export MONGODB_URL="mongodb://admin:admin@mongodb:27017/auctions?authSource=admin"
+export MONGODB_DB="auctions"
+
+3. Rode o comando abaixo para realizar o teste automatizado da abertura da auction, validação da abertura e validação do fechamento.
+
+go test -v ./test
